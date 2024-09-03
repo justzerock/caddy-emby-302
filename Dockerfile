@@ -1,8 +1,8 @@
 # 使用官方 Go 镜像作为基础镜像
 FROM golang:latest as builder
 
-# 安装 xcaddy
-# RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
+RUN echo "Go path1: $(which go) $(go version)"
+
 # https://goproxy.io
 RUN go env -w GOPROXY=https://goproxy.cn,https://gocenter.io,https://goproxy.io,direct
 # RUN echo "$(uname -a)"
