@@ -1,4 +1,4 @@
-package jellyfin
+package emby
 
 import (
 	"encoding/json"
@@ -23,13 +23,13 @@ type mediaItemJobResult struct {
 	Items []MeidaJobItem `json:"Items"`
 }
 
-func (d *DirverJellyfin) Init() *resty.Client {
+func (d *DirverEmby) Init() *resty.Client {
 	d.RestyClient = resty.New()
 	return d.RestyClient
 }
 
 // 获取这个 item 的文件路径
-func (d *DirverJellyfin) GetItemFilePath(reqItemInfo *ReqItemInfo) (*MediaItemFile, error) {
+func (d *DirverEmby) GetItemFilePath(reqItemInfo *ReqItemInfo) (*MediaItemFile, error) {
 	// 获取 itemurl
 	d.GetItemInfoUrl(reqItemInfo)
 	result := &MediaItemFile{}

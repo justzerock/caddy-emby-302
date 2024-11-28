@@ -22,19 +22,19 @@
     route {
         header Cache-Control "max-age=3600"
         redir302 {
-            # jellyfin或 emby的 server
+            # emby或 emby的 server
             media_server {$MEDIA_SERVER}
-            # jellyfin或 emby 的 token
+            # emby或 emby 的 token
             api_key {$MEDIA_TOKEN}
             # 115的 cookie
             cookie115 {$COOKIE_115}
             # 缓存时长，0 为不缓存,以分钟为单位
-            cache115 {$CACHE115}
+            cache302 {$CACHE302}
             # 缓存占用空间大小,单位MB
-            cache115_size {$CACHE115_SZIE}
+            cache302_size {$CACHE302_SZIE}
             # 从头开始匹配这个path 的才会走 115 302，比如本地盘和 115 混合的时候很有用，如果只是 115，则可以不配置这个路径
-            match_redir_115 {$MATCH_REDIR_115}
-            # 路径替换，将 jellyfin 的路径替换成 115 网盘的真实路径
+            match_redir_302 {$MATCH_REDIR_302}
+            # 路径替换，将 emby 的路径替换成 115 网盘的真实路径
             origin_path {$ORIGIN_PATH}
             # 目标路径，都是从头开始匹配
             replace_path {$REPLACE_PATH} 

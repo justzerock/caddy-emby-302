@@ -1,5 +1,5 @@
-package caddy115redir
+package caddyemby302
 
 import (
-	_ "github.com/jianxcao/caddy-115-302/plugins"
+	_ "github.com/justzerock/caddy-emby-302/plugins"
 )

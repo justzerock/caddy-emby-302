@@ -6,7 +6,7 @@ import (
 
 	caddycmd "github.com/caddyserver/caddy/v2/cmd"
 	_ "github.com/caddyserver/caddy/v2/modules/standard"
-	_ "github.com/jianxcao/caddy-115-302/plugins"
+	_ "github.com/justzerock/caddy-emby-302/plugins"
 )
 
 func main() {

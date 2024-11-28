@@ -1,4 +1,4 @@
-module github.com/jianxcao/caddy-115-302
+module github.com/justzerock/caddy-emby-302
 
 go 1.22.5
 

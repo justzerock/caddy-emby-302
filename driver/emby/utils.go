@@ -1,4 +1,4 @@
-package jellyfin
+package emby
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 // 获取itemId
-func (d *DirverJellyfin) GetItemIdByUri(uri string) string {
+func (d *DirverEmby) GetItemIdByUri(uri string) string {
 	// 从字符串中删除 "emby" 和 "Sync"
 	uri = strings.Replace(uri, "emby", "", 1)
 	uri = strings.Replace(uri, "Sync", "", 1)
@@ -25,8 +25,8 @@ func (d *DirverJellyfin) GetItemIdByUri(uri string) string {
 }
 
 // 获取请求 item 的地址
-// mediaSourceId emby 或者 jellyfin的文件id
-func (d *DirverJellyfin) GetItemInfoUrl(reqItemInfo *ReqItemInfo) *ReqItemInfo {
+// mediaSourceId emby 或者 emby的文件id
+func (d *DirverEmby) GetItemInfoUrl(reqItemInfo *ReqItemInfo) *ReqItemInfo {
 	if reqItemInfo.MediaSourceId == "" || reqItemInfo.OriginUri == "" {
 		return reqItemInfo
 	}

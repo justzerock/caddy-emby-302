@@ -18,15 +18,15 @@ services:
         # 这个目录是配置目录，Caddyfile 将被生成在这个目录下，可以针对请求做各种变化
         - /share/docker/media302/config:/config
       environment:
-        - MEDIA_SERVER=这里填 jellyfin,emby 的服务器地址
-        - MEDIA_TOKEN=这里填jellyfin,emby的 token
+        - MEDIA_SERVER=这里填 emby,emby 的服务器地址
+        - MEDIA_TOKEN=这里填emby,emby的 token
         - COOKIE_115="这里填 115 的 cookie"
-        # 原始路径，即你在 jellyfin 下挂载的路径，
+        # 原始路径，即你在 emby 下挂载的路径，
         - ORIGIN_PATH=/share/pan/cd/115/disk
         # 替换路径，即真实 115 网盘的路径，比如ORIGIN_PATH最后会被替换成 /disk
         - REPLACE_PATH=/disk
         # 这个可以不需要如果你不是混合内容的话，混合内容指部分资源在本地，部分资源在 115，所以会以这个路径开始的区分是不是 115 的资源
-        - MATCH_REDIR_115=/share/pan/cd/115
+        - MATCH_REDIR_302=/share/pan/cd/115
       ports:
         - "8090:8082"
 
@@ -39,12 +39,12 @@ services:
 docker run -d \
   --name media302 \
   -v /share/docker/media302/config:/config \
-  -e MEDIA_SERVER="这里填 jellyfin,emby 的服务器地址" \
-  -e MEDIA_TOKEN="这里填 jellyfin,emby 的 token" \
+  -e MEDIA_SERVER="这里填 emby,emby 的服务器地址" \
+  -e MEDIA_TOKEN="这里填 emby,emby 的 token" \
   -e COOKIE_115="这里填 115 的 cookie" \
   -e ORIGIN_PATH="/share/pan/cd/115/disk" \
   -e REPLACE_PATH="/disk" \
-  -e MATCH_REDIR_115="/share/pan/cd/115" \
+  -e MATCH_REDIR_302="/share/pan/cd/115" \
   -p 8090:8082 \
   jianxcao/redir115:latest
 
@@ -63,9 +63,9 @@ sh ./build-caddy.sh
 ## 其他 env 说明
 ``` sh
 # 这里是302到 115 连接在内存中占用空间大小，默认64M,不懂不要改
-export CACHE115_SZIE=64
+export CACHE302_SZIE=64
 # 这里是302到 115连接的时效性，目前是 15 分钟，不懂不要改
-export CACHE115=15
+export CACHE302=15
 # 这 2 个是 caddy 的缓存配置
 export BADGER_CACHE=/config/badger/cache
 export BADGER_CONFIG=/config/badger/config

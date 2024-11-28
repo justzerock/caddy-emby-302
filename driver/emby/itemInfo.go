@@ -1,4 +1,4 @@
-package jellyfin
+package emby
 
 type ReqItemInfo struct {
 	MediaSourceId string

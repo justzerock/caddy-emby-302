@@ -1,4 +1,4 @@
-package jellyfin
+package emby
 
 type MediaSource struct {
 	Path             string `json:"Path"`
