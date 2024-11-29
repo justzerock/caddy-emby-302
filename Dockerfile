@@ -27,7 +27,7 @@ FROM alpine:latest
 
 RUN mkdir -p /app
 RUN mkdir -p /config
-ENV CACHE302_SZIE=16
+ENV CACHE302_SIZE=16
 ENV CACHE302=1
 ENV MATCH_REDIR_302=""
 ENV BADGER_CACHE=/config/badger/cache

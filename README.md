@@ -1,32 +1,31 @@
-# caddy 302 115
+# Caddy Emby 302
 
 
-> 一个 caddy 的服务器支持将 115直接 302 到 115 网盘去
+> Caddy 反代 Emby，播放 302 直链
 
 
-
-## docker 方式安装
+## Docker 方式安装
 ``` sh
 # docker-compose的配置
 services:
-    media302:
-      image: jianxcao/redir115:latest
-      container_name: media302
-      volumes:
-        # 这个目录是配置目录，Caddyfile 将被生成在这个目录下，可以针对请求做各种变化
-        - /share/docker/media302/config:/config
-      environment:
-        - MEDIA_SERVER=这里填 emby,emby 的服务器地址 ** 必填 **
-        - MEDIA_TOKEN=这里填emby,emby的 token ** 必填 **
-        - SERVER_302=这里填302后端服务器 选填
-        # 原始路径，即你在 emby 下挂载的路径，
-        - ORIGIN_PATH=/share/pan/cd/115/disk 选填
-        # 替换路径，即真实 115 网盘的路径，比如ORIGIN_PATH最后会被替换成 /disk
-        - REPLACE_PATH=/disk 选填
-        # 这个可以不需要如果你不是混合内容的话，混合内容指部分资源在本地，部分资源在 115，所以会以这个路径开始的区分是不是 115 的资源
-        - MATCH_REDIR_302=/share/pan/cd/115 选填
-      ports:
-        - "8090:8082"
+  emby302:
+    image: justzerock/emby302:latest
+    container_name: emby302
+    volumes:
+      # 这个目录是配置目录，Caddyfile 将被生成在这个目录下，可以针对请求做各种变化
+      - ./config:/config
+    environment:
+      - MEDIA_SERVER=这里填 emby,jellfin 的服务器地址 ** 必填 **
+      - MEDIA_TOKEN=这里填 emby,jellfin 的 API KEY ** 必填 **
+      - SERVER_302=这里填302后端服务器 选填
+      # 原始路径，即 emby 挂载的路径，
+      - ORIGIN_PATH=/mnt/cloud/media 选填
+      # 替换路径，即 后端302服务器 的路径，比如 ORIGIN_PATH 最后会被替换成 /media
+      - REPLACE_PATH=/media 选填
+      # 若部分资源在本地，部分资源在网盘，MATCH_REDIR_302 用来区分网盘路径
+      - MATCH_REDIR_302=/mnt/cloud 选填
+    ports:
+      - "8090:8082"
 
 ```
 
@@ -35,20 +34,20 @@ services:
 # docker run 的命令
 
 docker run -d \
-  --name media302 \
-  -v /share/docker/media302/config:/config \
-  -e MEDIA_SERVER="这里填 emby,emby 的服务器地址" \
-  -e MEDIA_TOKEN="这里填 emby,emby 的 token" \
+  --name emby302 \
+  -v /emby302/config:/config \
+  -e MEDIA_SERVER="这里填 emby,jellfin 的服务器地址" \
+  -e MEDIA_TOKEN="这里填 emby,jellfin 的 API KEY" \
   -e SERVER_302="这里填302后端服务器 选填" \
-  -e ORIGIN_PATH="/share/pan/cd/115/disk" \
-  -e REPLACE_PATH="/disk" \
-  -e MATCH_REDIR_302="/share/pan/cd/115" \
+  -e ORIGIN_PATH="/mnt/cloud/media" \
+  -e REPLACE_PATH="/media" \
+  -e MATCH_REDIR_302="/mnt/cloud" \
   -p 8090:8082 \
-  jianxcao/redir115:latest
+  justzerock/emby302:latest
 
 ```
 
-## caddy模式
+## Caddy 模式
 > 因为是一个 caddy 的插件，所以可以自己构建一个 caddy，然后使用
 
 ``` sh
@@ -60,14 +59,14 @@ sh ./build-caddy.sh
 
 ## 其他 env 说明
 ``` sh
-# 这里是302到 115 连接在内存中占用空间大小，默认64M,不懂不要改
-export CACHE302_SZIE=64
-# 这里是302到 115连接的时效性，目前是 15 分钟，不懂不要改
-export CACHE302=15
+# 这里是302到 115 连接在内存中占用空间大小，默认16M
+export CACHE302_SIZE=16
+# 这里是302到 115连接的时效性，目前是 1 秒
+export CACHE302=1
 # 这 2 个是 caddy 的缓存配置
 export BADGER_CACHE=/config/badger/cache
 export BADGER_CONFIG=/config/badger/config
 ``` 
 
 
-> 最后/config/caddyfile里面有具体的说明，如果不想缓存图片和字幕可以自行删除相关的配置
+> 最后 /config/caddyfile 里面有具体的说明，如果想缓存图片和字幕可以自行取消注释相关的配置

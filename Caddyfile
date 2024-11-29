@@ -28,12 +28,10 @@
             api_key {$MEDIA_TOKEN}
             # 302后端服务器
             server_302 {$SERVER_302}
-            # 115的 cookie
-            # cookie115 {$COOKIE_115}
             # 缓存时长，0 为不缓存,以秒为单位
             cache302 {$CACHE302}
             # 缓存占用空间大小,单位MB
-            cache302_size {$CACHE302_SZIE}
+            cache302_size {$CACHE302_SIZE}
             # 从头开始匹配这个path 的才会走 115 302，比如本地盘和 115 混合的时候很有用，如果只是 115，则可以不配置这个路径
             match_redir_302 {$MATCH_REDIR_302}
             # 路径替换，将 emby 的路径替换成 115 网盘的真实路径
