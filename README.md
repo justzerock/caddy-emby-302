@@ -8,8 +8,6 @@
 ## docker 方式安装
 ``` sh
 # docker-compose的配置
-version: '3.8'
-
 services:
     media302:
       image: jianxcao/redir115:latest
@@ -18,15 +16,15 @@ services:
         # 这个目录是配置目录，Caddyfile 将被生成在这个目录下，可以针对请求做各种变化
         - /share/docker/media302/config:/config
       environment:
-        - MEDIA_SERVER=这里填 emby,emby 的服务器地址
-        - MEDIA_TOKEN=这里填emby,emby的 token
-        - COOKIE_115="这里填 115 的 cookie"
+        - MEDIA_SERVER=这里填 emby,emby 的服务器地址 ** 必填 **
+        - MEDIA_TOKEN=这里填emby,emby的 token ** 必填 **
+        - SERVER_302=这里填302后端服务器 选填
         # 原始路径，即你在 emby 下挂载的路径，
-        - ORIGIN_PATH=/share/pan/cd/115/disk
+        - ORIGIN_PATH=/share/pan/cd/115/disk 选填
         # 替换路径，即真实 115 网盘的路径，比如ORIGIN_PATH最后会被替换成 /disk
-        - REPLACE_PATH=/disk
+        - REPLACE_PATH=/disk 选填
         # 这个可以不需要如果你不是混合内容的话，混合内容指部分资源在本地，部分资源在 115，所以会以这个路径开始的区分是不是 115 的资源
-        - MATCH_REDIR_302=/share/pan/cd/115
+        - MATCH_REDIR_302=/share/pan/cd/115 选填
       ports:
         - "8090:8082"
 
@@ -41,7 +39,7 @@ docker run -d \
   -v /share/docker/media302/config:/config \
   -e MEDIA_SERVER="这里填 emby,emby 的服务器地址" \
   -e MEDIA_TOKEN="这里填 emby,emby 的 token" \
-  -e COOKIE_115="这里填 115 的 cookie" \
+  -e SERVER_302="这里填302后端服务器 选填" \
   -e ORIGIN_PATH="/share/pan/cd/115/disk" \
   -e REPLACE_PATH="/disk" \
   -e MATCH_REDIR_302="/share/pan/cd/115" \

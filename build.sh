@@ -1,1 +1,1 @@
-docker buildx build --platform linux/amd64,linux/arm64 -t jianxcao/redir115:latest -t jianxcao/redir115:0.0.1 .
+docker buildx build --platform linux/amd64,linux/arm64 -t justzerock/emby302:latest -t justzerock/emby302:0.0.1 .

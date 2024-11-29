@@ -26,9 +26,11 @@
             media_server {$MEDIA_SERVER}
             # emby或 emby 的 token
             api_key {$MEDIA_TOKEN}
+            # 302后端服务器
+            server_302 {$SERVER_302}
             # 115的 cookie
-            cookie115 {$COOKIE_115}
-            # 缓存时长，0 为不缓存,以分钟为单位
+            # cookie115 {$COOKIE_115}
+            # 缓存时长，0 为不缓存,以秒为单位
             cache302 {$CACHE302}
             # 缓存占用空间大小,单位MB
             cache302_size {$CACHE302_SZIE}
@@ -46,31 +48,31 @@
     encode gzip 
     @media path_regexp (?i)(audio/[^/]+/(universal|stream)|(items/[^/]+/Download)|(sync/jobItems/[^/]+/File)|(videos/[^/]+/(stream|original)))
     
-    @imgs path_regexp (?i)/Items/(.*)/Images
-    @subtitles path_regexp (?i)/videos/(.*)/Subtitles
+    # @imgs path_regexp (?i)/Items/(.*)/Images
+    # @subtitles path_regexp (?i)/videos/(.*)/Subtitles
     # 重定向到网盘
     handle @media {
         import redir302_block
     }
 
     # 将请求的图片缓存到caddy下
-    handle @imgs {
-        cache {
-            # 10 分钟内重复的请求将直接走缓存
-            ttl 30d
-            # 多少时间后重新校验，当然如果客户端返回立即校验的 cache-control则会立即校验
-            stale 1d
-        }
-    }
-    # 将字母缓存到caddy下, 如果不想要缓存，可以直接删除这一段
-    handle @subtitles {
-        cache {
-            # 10 分钟内重复的请求将直接走缓存
-            ttl 30d
-            # 多少时间后重新校验，当然如果客户端返回立即校验的 cache-control则会立即校验
-            stale 1d
-        }
-    }
+    # handle @imgs {
+    #     cache {
+    #         # 10 分钟内重复的请求将直接走缓存
+    #         ttl 30d
+    #         # 多少时间后重新校验，当然如果客户端返回立即校验的 cache-control则会立即校验
+    #         stale 1d
+    #     }
+    # }
+    # # 将字母缓存到caddy下, 如果不想要缓存，可以直接删除这一段
+    # handle @subtitles {
+    #     cache {
+    #         # 10 分钟内重复的请求将直接走缓存
+    #         ttl 30d
+    #         # 多少时间后重新校验，当然如果客户端返回立即校验的 cache-control则会立即校验
+    #         stale 1d
+    #     }
+    # }
 
     reverse_proxy {$MEDIA_SERVER} {
         header_up Host {http.reverse_proxy.upstream.hostport}

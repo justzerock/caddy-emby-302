@@ -68,14 +68,14 @@ func (t *Redir302) Provision(ctx caddy.Context) error {
 	}
 	t.DirverEmby.Init()
 	if t.Cache302Szie == 0 {
-		t.Cache302Szie = 64
+		t.Cache302Szie = 16
 	}
-	t.log.Debug("init Cache start", zap.Int("size", t.Cache302Szie), zap.Duration("expire", time.Duration(t.Cache302)*time.Minute))
+	t.log.Debug("init Cache start", zap.Int("size", t.Cache302Szie), zap.Duration("expire", time.Duration(t.Cache302)*time.Second))
 	if t.Cache302 > 0 {
-		cfg := bigcache.DefaultConfig(time.Duration(t.Cache302) * time.Minute)
+		cfg := bigcache.DefaultConfig(time.Duration(t.Cache302) * time.Second)
 		cfg.HardMaxCacheSize = t.Cache302Szie
 		cache, err := bigcache.New(context.Background(), cfg)
-		t.log.Debug("init cache success", zap.Int("size", t.Cache302Szie), zap.Duration("expire", time.Duration(t.Cache302)*time.Minute))
+		t.log.Debug("init cache success", zap.Int("size", t.Cache302Szie), zap.Duration("expire", time.Duration(t.Cache302)*time.Second))
 		if err != nil {
 			return err
 		}
@@ -100,6 +100,7 @@ func (t *Redir302) mappingPath(p string) string {
 			rp = strings.Replace(p, item, t.ReplacePath[idx], 1)
 		}
 	}
+	t.log.Info("拦截替换后的 path", zap.String("path", rp))
 	return rp
 }
 
@@ -124,7 +125,7 @@ func (t *Redir302) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyh
 		if v, err := t.Cache.Get(cacheKey); err == nil {
 			u := string(v)
 			if u != "" {
-				time.Sleep(350 * time.Millisecond)
+				time.Sleep(500 * time.Millisecond)
 				t.log.Info("命中缓存，从缓存中获取 url", zap.String("cacheKey", cacheKey), zap.String("url", u))
 				t.redirUrl(w, r, u)
 				return nil
@@ -163,33 +164,35 @@ func (t *Redir302) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyh
 		}
 		res.Path = strings.ReplaceAll(res.Path, "\\", "/")
 		res.Path = t.mappingPath(res.Path)
-		t.log.Info("拦截替换后的 path", zap.String("res.Path", res.Path))
-		// 发现自定义了，替换服务
-		reqUrl := t.prepareRedirectURL(res.Path)
-		req, err := http.NewRequest("GET", reqUrl, nil)
-		if err != nil {
-			t.log.Error("创建请求失败", zap.Error(err))
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return nil
-		}
-		req.Header.Set("User-Agent", r.Header.Get("User-Agent"))
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			t.log.Error("发送请求失败", zap.Error(err))
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return nil
-		}
-		defer resp.Body.Close()
-		redirectURL := resp.Request.URL.String()
-		t.log.Info("重定向到 url", zap.String("url", redirectURL))
-		t.redirUrl(w, r, redirectURL)
-		t.afterRedir(r, redirectURL)
+		reqUrl := t.replaceServer302(res.Path)
+		url302 := t.getUrl302(reqUrl, w, r)
+		t.redirUrl(w, r, url302)
+		t.afterRedir(r, url302)
 		return nil
 	}
 }
 
-func (t *Redir302) prepareRedirectURL(path string) string {
+func (t *Redir302) getUrl302(url string, w http.ResponseWriter, r *http.Request) string {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		t.log.Error("创建请求失败", zap.Error(err))
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return ""
+	}
+	req.Header.Set("User-Agent", r.Header.Get("User-Agent"))
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		t.log.Error("发送请求失败", zap.Error(err))
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return ""
+	}
+	defer resp.Body.Close()
+	url302 := resp.Request.URL.String()
+	return url302
+}
+
+func (t *Redir302) replaceServer302(path string) string {
 	if t.Server302 == "" {
 		return path
 	}
@@ -203,12 +206,15 @@ func (t *Redir302) prepareRedirectURL(path string) string {
 	}
 	parsedURL.Scheme = ""
 	parsedURL.Host = ""
-	return fmt.Sprintf("%s%s", t.Server302, parsedURL.String())
+	urlserver := fmt.Sprintf("%s%s", t.Server302, parsedURL.String())
+	t.log.Info("替换 302服务器", zap.String("server302", urlserver))
+	return urlserver
 }
 
 func (t *Redir302) redirUrl(w http.ResponseWriter, r *http.Request, url string) {
 	// w.WriteHeader(http.StatusOK)
 	// w.Write([]byte(url))
+	t.log.Info("重定向到 302url", zap.String("url302", url))
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
