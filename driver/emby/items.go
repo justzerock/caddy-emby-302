@@ -31,6 +31,8 @@ func (d *DirverEmby) Init() *resty.Client {
 // 获取这个 item 的文件路径
 func (d *DirverEmby) GetItemFilePath(reqItemInfo *ReqItemInfo) (*MediaItemFile, error) {
 	// 获取 itemurl
+	fmt.Printf("Emby API Request: %s/emby/Items?api_key=%s&Ids=%s\n",
+		d.Url, reqItemInfo.ApiKey, reqItemInfo.MediaSourceId)
 	d.GetItemInfoUrl(reqItemInfo)
 	result := &MediaItemFile{}
 	contentType := []string{"application/json;charset=utf-8"}
