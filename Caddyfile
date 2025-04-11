@@ -74,7 +74,11 @@
 
     reverse_proxy {$MEDIA_SERVER} {
         header_up Host {http.reverse_proxy.upstream.hostport}
-        header_up X-Real-IP {http.request.remote}
+        # 保留原始X-Forwarded-For，并添加当前请求IP
+        header_up X-Forwarded-For {http.request.header.X-Forwarded-For},{http.request.remote}
+        # 如果lucky已经设置了X-Real-IP，则保留它
+        header_up X-Real-IP {http.request.header.X-Real-IP}
+        header_up X-Forwarded-Proto {scheme}
         # header_up User-Agent {>User-Agent}
     }
 }
