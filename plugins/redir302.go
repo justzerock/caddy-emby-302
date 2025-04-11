@@ -39,8 +39,8 @@ type Redir302 struct {
 	MediaServer   string   `json:"media_server"`
 	Server302     string   `json:"server_302"`
 	Token         string   `json:"token"`
-	Cache302      int      `json:"cache302,omitempty"`
-	Cache302Szie  int      `json:"cache302_size,omitempty"`
+	Cache302      int      `json:"cache_302,omitempty"`
+	Cache302Size  int      `json:"cache_302_size,omitempty"`
 	MatchRedir302 string   `json:"match_redir_302,omitempty"`
 	ReplacePath   []string `json:"replace_path,omitempty"`
 	OriginPath    []string `json:"origin_path,omitempty"`
@@ -67,15 +67,15 @@ func (t *Redir302) Provision(ctx caddy.Context) error {
 		Token: t.Token,
 	}
 	t.DirverEmby.Init()
-	if t.Cache302Szie == 0 {
-		t.Cache302Szie = 16
+	if t.Cache302Size == 0 {
+		t.Cache302Size = 16
 	}
-	t.log.Debug("init Cache start", zap.Int("size", t.Cache302Szie), zap.Duration("expire", time.Duration(t.Cache302)*time.Second))
+	t.log.Debug("init Cache start", zap.Int("size", t.Cache302Size), zap.Duration("expire", time.Duration(t.Cache302)*time.Second))
 	if t.Cache302 > 0 {
 		cfg := bigcache.DefaultConfig(time.Duration(t.Cache302) * time.Second)
-		cfg.HardMaxCacheSize = t.Cache302Szie
+		cfg.HardMaxCacheSize = t.Cache302Size
 		cache, err := bigcache.New(context.Background(), cfg)
-		t.log.Debug("init cache success", zap.Int("size", t.Cache302Szie), zap.Duration("expire", time.Duration(t.Cache302)*time.Second))
+		t.log.Debug("init cache success", zap.Int("size", t.Cache302Size), zap.Duration("expire", time.Duration(t.Cache302)*time.Second))
 		if err != nil {
 			return err
 		}
@@ -259,7 +259,7 @@ func (t *Redir302) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 					continue
 				}
 				t.MatchRedir302 = d.Val()
-			case "cache302":
+			case "cache_302":
 				if !d.NextArg() {
 					continue
 				}
@@ -267,13 +267,13 @@ func (t *Redir302) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 				if val > 0 {
 					t.Cache302 = val
 				}
-			case "cache302_size":
+			case "cache_302_size":
 				if !d.NextArg() {
 					continue
 				}
 				val := cast.ToInt(d.Val())
 				if val > 0 {
-					t.Cache302Szie = val
+					t.Cache302Size = val
 				}
 			case "api_key":
 				if !d.NextArg() {

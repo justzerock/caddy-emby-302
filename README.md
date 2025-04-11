@@ -17,7 +17,7 @@ services:
     environment:
       - MEDIA_SERVER=这里填 emby,jellfin 的服务器地址 ** 必填 **
       - MEDIA_TOKEN=这里填 emby,jellfin 的 API KEY ** 必填 **
-      - SERVER_302=这里填302后端服务器 选填
+      - SERVER302=这里填302后端服务器 选填
       # 原始路径，即 emby 挂载的路径，
       - ORIGIN_PATH=/mnt/cloud/media 选填
       # 替换路径，即 后端302服务器 的路径，比如 ORIGIN_PATH 最后会被替换成 /media
@@ -60,7 +60,7 @@ sh ./build-caddy.sh
 ## 其他 env 说明
 ``` sh
 # 这里是302到 115 连接在内存中占用空间大小，默认16M
-export CACHE302_SIZE=16
+export CACHE302SIZE=16
 # 这里是302到 115连接的时效性，目前是 1 秒
 export CACHE302=1
 # 这 2 个是 caddy 的缓存配置
