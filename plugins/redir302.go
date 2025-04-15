@@ -225,8 +225,6 @@ func (t *Redir302) getMediaSourceId(r *http.Request) string {
 	if MediaSourceId == "" {
 		MediaSourceId = query.Get("MediaSourceId")
 	}
-	// Strip "mediasource_" prefix if present
-	MediaSourceId = strings.TrimPrefix(MediaSourceId, "mediasource_")
 	return MediaSourceId
 }
 

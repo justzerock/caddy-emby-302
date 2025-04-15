@@ -61,8 +61,8 @@ sh ./build-caddy.sh
 ``` sh
 # 这里是302到 115 连接在内存中占用空间大小，默认16M
 export CACHE302SIZE=16
-# 这里是302到 115连接的时效性，目前是 1 秒
-export CACHE302=1
+# 这里是302到 115连接的时效性，目前是 300 秒
+export CACHE302=300
 # 这 2 个是 caddy 的缓存配置
 export BADGER_CACHE=/config/badger/cache
 export BADGER_CONFIG=/config/badger/config
